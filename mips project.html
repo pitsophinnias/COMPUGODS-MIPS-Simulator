@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIPS Assembler Web App</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e; /* Dark background color */
+            color: #ffffff; /* Light text color */
+        }
+
+        #main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        #editor-container {
+            flex: 2;
+            overflow: auto;
+            padding: 20px;
+        }
+
+        #register-file-container {
+            flex: 1;
+            overflow: auto;
+            padding: 20px;
+            border-left: 1px solid #2e2e2e; /* Darker border color */
+            position: relative;
+            height: 100%;
+        }
+
+        #output-container {
+            flex: 1;
+            overflow: auto;
+            padding: 20px;
+            border-top: 1px solid #2e2e2e; /* Darker border color */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+
+        th, td {
+            padding: 8px;
+            border: 1px solid #2e2e2e; /* Darker border color */
+            text-align: left;
+        }
+
+        th {
+            background-color: #333333; /* Darker background color */
+        }
+
+        /* Adjusted styles to make register file table extend to the bottom */
+        #register-file-container:after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: calc(100vh - 40px); /* Subtracting the padding */
+            background-color: #1e1e1e; /* Match body background color */
+            z-index: -1;
+        }
+
+        /* Button styles */
+        #button-container {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background-color: #333333; /* Darker background color for buttons */
+        }
+
+        button {
+            padding: 10px;
+            background-color: #2e2e2e; /* Darker button background color */
+            color: #ffffff; /* Light button text color */
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #444444; /* Slightly darker background color on hover */
+        }
+
+        /* Input file button styles */
+        input[type="file"] {
+            display: none;
+        }
+
+        #open-file-button {
+            padding: 10px;
+            background-color: #2e2e2e; /* Darker button background color */
+            color: #ffffff; /* Light button text color */
+            border: none;
+            cursor: pointer;
+        }
+
+        #open-file-button:hover {
+            background-color: #444444; /* Slightly darker background color on hover */
+        }
+    </style>
+</head>
+<body>
+    <div id="button-container">
+        <button id="run-button">RUN</button>
+        <button id="new-button">New</button>
+        <button id="close-button">Close</button>
+        <label for="file-input" id="open-file-button">Open</label>
+        <input type="file" id="file-input" style="display: none">
+    </div>
+
+    <div id="main-container">
+        <div id="editor-container">
+            <h2 style="color: #ffffff;">Text Editor</h2>
+            <!-- Your dark-themed text editor can go here (e.g., using a textarea) -->
+            <textarea id="editor" rows="10" cols="80" style="background-color: #2e2e2e; color: #ffffff;"></textarea>
+        </div>
+
+        <div id="register-file-container">
+            <h2 style="color: #ffffff;">Register File Table</h2>
+            <!-- Your dark-themed register file table can go here (e.g., using a table) -->
+            <table id="register-table">
+                <thead>
+                    <tr>
+                        <th>Register</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Manual input for additional registers -->
+                    <!-- ... (previous content) ... -->
+					<!-- Manual input for additional registers -->
+                    <tr><td>$zero</td><td>0x00000000</td></tr>
+                    <tr><td>$at</td><td>0x00000000</td></tr>
+                    <tr><td>$v0</td><td>0x00000000</td></tr>
+                    <tr><td>$v1</td><td>0x00000000</td></tr>
+                    <tr><td>$a0</td><td>0x00000000</td></tr>
+                    <tr><td>$a1</td><td>0x00000000</td></tr>
+                    <tr><td>$a2</td><td>0x00000000</td></tr>
+                    <tr><td>$a3</td><td>0x00000000</td></tr>
+                    <tr><td>$t0</td><td>0x00000000</td></tr>
+                    <tr><td>$t1</td><td>0x00000000</td></tr>
+                    <tr><td>$t2</td><td>0x00000000</td></tr>
+                    <tr><td>$t3</td><td>0x00000000</td></tr>
+                    <tr><td>$t4</td><td>0x00000000</td></tr>
+                    <tr><td>$t5</td><td>0x00000000</td></tr>
+                    <tr><td>$t6</td><td>0x00000000</td></tr>
+                    <tr><td>$t7</td><td>0x00000000</td></tr>
+                    <tr><td>$s0</td><td>0x00000000</td></tr>
+                    <tr><td>$s1</td><td>0x00000000</td></tr>
+                    <tr><td>$s2</td><td>0x00000000</td></tr>
+                    <tr><td>$s3</td><td>0x00000000</td></tr>
+                    <tr><td>$s4</td><td>0x00000000</td></tr>
+                    <tr><td>$s5</td><td>0x00000000</td></tr>
+                    <tr><td>$s6</td><td>0x00000000</td></tr>
+                    <tr><td>$s7</td><td>0x00000000</td></tr>
+                    <tr><td>$t8</td><td>0x00000000</td></tr>
+                    <tr><td>$t9</td><td>0x00000000</td></tr>
+                    <tr><td>$k0</td><td>0x00000000</td></tr>
+                    <tr><td>$k1</td><td>0x00000000</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="output-container">
+        <h2 style="color: #ffffff;">Output</h2>
+        <!-- Your dark-themed output display can go here -->
+        <pre id="output" style="background-color: #2e2e2e; color: #ffffff;"></pre>
+    </div>
+
+    <!-- Include your JavaScript logic for interacting with the elements here -->
+    <script>
+        // Sample JavaScript code to interact with the elements
+        const editor = document.getElementById('editor');
+        const output = document.getElementById('output');
+        const fileInput = document.getElementById('file-input');
+
+        // Add event listeners or other logic as needed
+
+        // Example: Display output when a button is clicked
+        document.getElementById('run-button').addEventListener('click', () => {
+            const inputText = editor.value;
+            // Process inputText and update output.innerHTML accordingly
+            output.innerHTML = 'Output: Example output';
+        });
+
+        document.getElementById('new-button').addEventListener('click', () => {
+            // Logic for New button
+        });
+
+        document.getElementById('close-button').addEventListener('click', () => {
+            editor.value = ''; // Clear the text editor
+        });
+
+        document.getElementById('open-file-button').addEventListener('click', () => {
+            fileInput.click(); // Trigger the file input click
+        });
+
+        // Handle file input change event
+        fileInput.addEventListener('change', () => {
+            const file = fileInput.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = (e) => {
+                    editor.value = e.target.result; // Set the text editor content
+                };
+
+                reader.readAsText(file);
+            }
+        });
+    </script>
+</body>
+</html>

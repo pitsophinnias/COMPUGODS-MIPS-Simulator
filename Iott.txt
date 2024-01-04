@@ -1,0 +1,66 @@
+.data
+readingsArray:  .word 72, 68, 70, 73, 69
+data:           .space 8
+averageReading: .space 8
+
+.text
+.globl main
+
+main:
+    la   $t0, readingsArray
+    li   $t1, 5
+    sw   $t0, data
+    sw   $t1, 4(data)
+
+    la   $a0, data
+    jal  computeAverage
+
+    swc1 $f0, averageReading
+
+    li.s $f1, 70.0
+    c.lt.s $f0, $f1
+    bc1t watering_needed
+
+    li   $v0, 4
+    la   $a0, no_watering_str
+    syscall
+
+    j end_program
+
+watering_needed:
+    li   $v0, 4
+    la   $a0, watering_needed_str
+    syscall
+
+end_program:
+    li   $v0, 10
+    syscall
+
+computeAverage:
+    lw   $t0, 0($a0)
+    lw   $t1, 4($a0)
+
+    li   $t2, 0
+    li   $t3, 0
+
+average_loop:
+    beq  $t3, $t1, average_done
+
+    lw   $t4, 0($t0)
+    add  $t2, $t2, $t4
+
+    addi $t0, $t0, 4
+    addi $t3, $t3, 1
+    j    average_loop
+
+average_done:
+    cvt.s.w $f0, $t2
+    mtc1.d  $f0, $f0
+    cvt.d.s $f0, $f0
+    div.d   $f0, $f0, $t1
+
+    jr   $ra
+
+.data
+no_watering_str:  .asciiz "No watering needed.\n"
+watering_needed_str:  .asciiz "Watering needed!\n"
